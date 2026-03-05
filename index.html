@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHYSICS DADA — AI Science Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --saffron:  #FF6B35;
+    --turmeric: #FFB800;
+    --indigo:   #1A1A2E;
+    --pink:     #FF006E;
+    --lime:     #CCFF00;
+    --white:    #F5F5F0;
+    --black:    #0D0D0D;
+    --blue:     #0047FF;
+    --green:    #00E676;
+  }
+
+  html, body { height: 100%; overflow: hidden; }
+
+  body {
+    font-family: 'Space Mono', monospace;
+    background: var(--indigo);
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    background-image:
+      repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,107,53,0.03) 35px, rgba(255,107,53,0.03) 70px),
+      repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(255,184,0,0.03) 35px, rgba(255,184,0,0.03) 70px);
+  }
+
+  /* ── MARQUEE ── */
+  .marquee {
+    background: var(--black);
+    color: var(--lime);
+    padding: 6px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    flex-shrink: 0;
+  }
+
+  .marquee-inner {
+    display: inline-block;
+    animation: marquee 22s linear infinite;
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── HEADER ── */
+  .header {
+    flex-shrink: 0;
+    background: var(--saffron);
+    border-bottom: 8px solid var(--black);
+    padding: 18px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: "⚛ ⚛ ⚛";
+    position: absolute;
+    top: 12px; right: 24px;
+    font-size: 22px;
+    animation: spin 10s linear infinite;
+    opacity: 0.25;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 5vw, 52px);
+    letter-spacing: 5px;
+    color: var(--black);
+    line-height: 1;
+    text-shadow: 3px 3px 0 var(--turmeric);
+    z-index: 1;
+  }
+
+  .logo em { color: var(--white); font-style: normal; -webkit-text-stroke: 1px var(--black); }
+
+  .header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    z-index: 1;
+  }
+
+  .header-sub {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--black);
+    opacity: 0.6;
+  }
+
+  .header-badges {
+    display: flex;
+    gap: 6px;
+  }
+
+  .badge {
+    background: var(--black);
+    color: var(--turmeric);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 4px 10px;
+    text-transform: uppercase;
+  }
+
+  .badge.live { background: var(--green); color: var(--black); animation: blink 1.2s step-end infinite; }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ── APP GRID ── */
+  .app {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 260px 1fr 300px;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* ── LEFT SIDEBAR ── */
+  .sidebar {
+    background: var(--black);
+    border-right: 4px solid var(--black);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sidebar-head {
+    padding: 14px 16px;
+    border-bottom: 4px solid var(--black);
+    background: var(--blue);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .topic-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--turmeric) transparent;
+  }
+
+  .topic-cat {
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: #444;
+    text-transform: uppercase;
+    padding: 10px 10px 4px;
+    border-top: 1px solid #1a1a1a;
+    margin-top: 6px;
+  }
+
+  .topic-cat:first-child { border-top: none; margin-top: 0; }
+
+  .topic-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: 2px solid transparent;
+    color: #666;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    margin-bottom: 2px;
+    cursor: pointer;
+    transition: all 0.08s;
+    position: relative;
+  }
+
+  .topic-btn:hover, .topic-btn.active {
+    border-color: var(--turmeric);
+    color: var(--turmeric);
+    background: rgba(255,184,0,0.06);
+    padding-left: 18px;
+  }
+
+  .topic-btn:hover::before, .topic-btn.active::before {
+    content: '▶';
+    position: absolute;
+    left: 5px;
+    font-size: 7px;
+  }
+
+  /* ── CHAT MAIN ── */
+  .chat-main {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--white);
+    border-left: 0;
+  }
+
+  .chat-header-bar {
+    background: var(--turmeric);
+    border-bottom: 4px solid var(--black);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .status-dot {
+    width: 18px; height: 18px;
+    background: var(--lime);
+    border: 3px solid var(--black);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50%      { transform: scale(1.2); }
+  }
+
+  .chat-bar-title {
+    font-weight: 700;
+    color: var(--black);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 13px;
+  }
+
+  .chat-bar-right {
+    margin-left: auto;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: rgba(0,0,0,0.45);
+    font-weight: 700;
+  }
+
+  .chat-feed {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: var(--black);
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 24px,
+      rgba(0,0,0,0.04) 24px, rgba(0,0,0,0.04) 25px
+    );
+    scrollbar-width: thin;
+    scrollbar-color: var(--pink) transparent;
+  }
+
+  /* ── WELCOME ── */
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 20px;
+    text-align: center;
+    padding: 40px;
+  }
+
+  .welcome-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 8vw, 110px);
+    line-height: 0.85;
+    letter-spacing: 4px;
+    color: var(--black);
+  }
+
+  .welcome-title span {
+    display: block;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 3px var(--saffron);
+  }
+
+  .welcome-sub {
+    font-size: 10px;
+    color: #888;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    line-height: 1.9;
+    max-width: 380px;
+  }
+
+  .quick-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    max-width: 460px;
+  }
+
+  .chip {
+    background: transparent;
+    border: 2px solid #ccc;
+    color: #888;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+
+  .chip:hover {
+    border-color: var(--saffron);
+    color: var(--saffron);
+    background: rgba(255,107,53,0.06);
+    transform: translate(-2px,-2px);
+    box-shadow: 2px 2px 0 var(--saffron);
+  }
+
+  /* ── MESSAGES ── */
+  .msg {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 86%;
+    animation: msgIn 0.18s ease;
+  }
+
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.user { align-self: flex-end; }
+  .msg.bot  { align-self: flex-start; }
+
+  .msg-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0 4px;
+  }
+
+  .msg.user .msg-label { text-align: right; color: var(--indigo); }
+  .msg.bot  .msg-label { color: var(--pink); }
+
+  .msg-bubble {
+    padding: 14px 18px;
+    font-size: 13px;
+    line-height: 1.7;
+    border: 3px solid var(--black);
+    position: relative;
+  }
+
+  .msg.user .msg-bubble {
+    background: var(--saffron);
+    color: var(--black);
+    font-weight: 700;
+    box-shadow: -5px 5px 0 var(--black);
+  }
+
+  .msg.bot .msg-bubble {
+    background: var(--white);
+    color: var(--black);
+    box-shadow: 5px 5px 0 var(--turmeric);
+  }
+
+  /* ── FORMULA / INSIGHT BLOCKS ── */
+  .formula {
+    background: #F0F4FF;
+    border: 2px solid var(--blue);
+    border-left: 6px solid var(--blue);
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-size: 13px;
+    color: var(--blue);
+    position: relative;
+  }
+
+  .formula::before {
+    content: 'FORMULA';
+    position: absolute;
+    top: -9px; left: 10px;
+    background: var(--blue);
+    color: #fff;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 1px 6px;
+  }
+
+  .insight {
+    border-left: 5px solid var(--saffron);
+    padding: 8px 12px;
+    margin: 8px 0;
+    background: rgba(255,107,53,0.06);
+    color: #333;
+    font-size: 12px;
+  }
+
+  /* ── TYPING ── */
+  .typing {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding: 14px 18px;
+    background: var(--turmeric);
+    border: 3px solid var(--black);
+    align-self: flex-start;
+    width: 90px;
+  }
+
+  .dot {
+    width: 10px; height: 10px;
+    background: var(--black);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+  }
+
+  .dot:nth-child(1) { animation-delay: -0.32s; }
+  .dot:nth-child(2) { animation-delay: -0.16s; }
+  .dot:nth-child(3) { animation-delay: 0s; }
+
+  @keyframes bounce {
+    0%,80%,100% { transform: scale(0); }
+    40%          { transform: scale(1); }
+  }
+
+  /* ── INPUT BAR ── */
+  .input-area {
+    border-top: 4px solid var(--black);
+    padding: 14px 18px;
+    background: var(--indigo);
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .input-area::before {
+    content: 'ASK ANYTHING ABOUT PHYSICS';
+    position: absolute;
+    top: -1px; left: 18px;
+    transform: translateY(-50%);
+    background: var(--pink);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 2px 8px;
+    text-transform: uppercase;
+  }
+
+  .input-wrap {
+    flex: 1;
+    border: 3px solid var(--black);
+    background: var(--white);
+    transition: all 0.1s;
+  }
+
+  .input-wrap:focus-within {
+    background: var(--lime);
+    box-shadow: inset 0 0 0 2px var(--black);
+  }
+
+  #chatInput {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--black);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    padding: 12px 14px;
+    resize: none;
+    outline: none;
+    min-height: 48px;
+    max-height: 120px;
+  }
+
+  #chatInput::placeholder { color: #999; }
+
+  .send-btn {
+    background: var(--pink);
+    border: 3px solid var(--black);
+    color: #fff;
+    padding: 0 22px;
+    height: 52px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.1s;
+    box-shadow: 4px 4px 0 var(--black);
+  }
+
+  .send-btn:hover {
+    transform: translate(2px,2px);
+    box-shadow: 2px 2px 0 var(--black);
+  }
+
+  .send-btn:active {
+    transform: translate(4px,4px);
+    box-shadow: none;
+  }
+
+  /* ── VIDEO SIDEBAR ── */
+  .video-sidebar {
+    border-left: 4px solid var(--black);
+    background: var(--turmeric);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .video-head {
+    background: var(--pink);
+    border-bottom: 4px solid var(--black);
+    padding: 13px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #fff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .video-count {
+    background: var(--black);
+    color: var(--turmeric);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+  }
+
+  .video-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--pink) transparent;
+  }
+
+  .video-empty {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--black);
+    text-align: center;
+    padding: 24px;
+    opacity: 0.5;
+  }
+
+  .video-empty-icon { font-size: 40px; }
+
+  .video-empty-text {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    line-height: 1.8;
+  }
+
+  .vcard {
+    background: var(--white);
+    border: 3px solid var(--black);
+    cursor: pointer;
+    transition: all 0.15s;
+    overflow: hidden;
+    animation: fadeSlide 0.25s ease;
+    position: relative;
+  }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateX(8px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .vcard:hover {
+    transform: translate(-4px,-4px);
+    box-shadow: 8px 8px 0 var(--black);
+  }
+
+  .vcard-thumb {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    background: #ddd;
+    overflow: hidden;
+  }
+
+  .vcard-thumb img {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(20%) contrast(110%);
+    border-bottom: 3px solid var(--black);
+  }
+
+  .vcard-play-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,0,110,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .vcard:hover .vcard-play-overlay { opacity: 1; }
+
+  .play-btn {
+    width: 48px; height: 48px;
+    background: var(--pink);
+    border: 3px solid var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+  }
+
+  .vcard-duration {
+    position: absolute;
+    bottom: 6px; right: 6px;
+    background: var(--black);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 5px;
+  }
+
+  .vcard-info { padding: 10px; }
+
+  .vcard-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1.4;
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .vcard-meta {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--pink);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ── SETTINGS FAB ── */
+
+  /* ── VIDEO LOADING ── */
+  .video-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 30px 20px;
+    color: var(--black);
+    opacity: 0.6;
+  }
+
+  .loading-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(0,0,0,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .loading-bar::after {
+    content: '';
+    position: absolute;
+    left: -40%; top: 0;
+    width: 40%; height: 100%;
+    background: var(--pink);
+    animation: loadSlide 1s linear infinite;
+  }
+
+  @keyframes loadSlide {
+    from { left: -40%; }
+    to   { left: 100%; }
+  }
+
+  .loading-text {
+    font-size: 10px;
+    letter-spacing: 3px;
+    font-weight: 700;
+    text-transform: uppercase;
+    animation: blink 1s step-end infinite;
+  }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    flex-shrink: 0;
+    background: var(--black);
+    border-top: 3px solid #1a1a1a;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 0 20px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #444;
+  }
+
+  .s-dot {
+    width: 6px; height: 6px;
+    background: var(--lime);
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: glow 2s ease infinite;
+  }
+
+  @keyframes glow {
+    0%,100% { box-shadow: 0 0 0 0 rgba(204,255,0,0.4); }
+    50%      { box-shadow: 0 0 0 4px rgba(204,255,0,0); }
+  }
+
+  .s-active { color: var(--lime); }
+  .s-sep    { color: #1a1a1a; }
+
+  /* ── SCROLLBARS ── */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--turmeric); border: 2px solid var(--black); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--pink); }
+
+  /* ── SETTINGS FAB ── */
+  .settings-fab {
+    position: fixed;
+    bottom: 22px;
+    right: 22px;
+    width: 52px;
+    height: 52px;
+    background: var(--lime);
+    border: 4px solid var(--black);
+    border-radius: 50%;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 5px 5px 0 var(--black);
+    z-index: 500;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .settings-fab:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 3px 3px 0 var(--black);
+  }
+
+  /* ── SETTINGS MODAL ── */
+  .settings-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    padding: 20px;
+  }
+
+  .settings-overlay.open { display: flex; }
+
+  .settings-box {
+    background: var(--white);
+    border: 6px solid var(--black);
+    box-shadow: 16px 16px 0 var(--pink);
+    width: 100%;
+    max-width: 480px;
+    padding: 28px;
+    position: relative;
+    animation: modalIn 0.2s ease;
+  }
+
+  .settings-close {
+    position: absolute;
+    top: -14px; right: -14px;
+    width: 36px; height: 36px;
+    background: var(--pink);
+    border: 3px solid var(--black);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .settings-close:hover { background: var(--black); }
+
+  .settings-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 4px;
+    color: var(--black);
+    border-bottom: 4px solid var(--turmeric);
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+  }
+
+  .settings-note {
+    background: #FFF8E1;
+    border-left: 5px solid var(--turmeric);
+    padding: 10px 14px;
+    font-size: 11px;
+    color: #555;
+    margin-bottom: 20px;
+    line-height: 1.7;
+  }
+
+  .settings-field {
+    margin-bottom: 18px;
+  }
+
+  .settings-field label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--black);
+    margin-bottom: 6px;
+  }
+
+  .key-input-wrap {
+    display: flex;
+    border: 3px solid var(--black);
+    background: var(--lime);
+    overflow: hidden;
+  }
+
+  .key-input-wrap input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 10px 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--black);
+    outline: none;
+  }
+
+  .toggle-vis {
+    background: var(--black);
+    color: var(--lime);
+    border: none;
+    padding: 0 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .toggle-vis:hover { background: var(--indigo); }
+
+  .field-hint {
+    display: block;
+    font-size: 10px;
+    color: #888;
+    margin-top: 5px;
+  }
+
+  .field-hint a { color: var(--saffron); font-weight: 700; }
+
+  .settings-save {
+    width: 100%;
+    padding: 14px;
+    background: var(--saffron);
+    border: 3px solid var(--black);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    box-shadow: 5px 5px 0 var(--black);
+    transition: all 0.1s;
+    margin-top: 4px;
+  }
+
+  .settings-save:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 3px 3px 0 var(--black);
+  }
+
+  .settings-status {
+    margin-top: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 1px;
+    min-height: 18px;
+  }
+
+  .settings-status.ok  { color: green; }
+  .settings-status.err { color: var(--pink); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar, .video-sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="marquee-inner">
+    ⚛ NEWTON'S LAWS &nbsp;⚛ QUANTUM MECHANICS &nbsp;⚛ THERMODYNAMICS &nbsp;⚛ ELECTROMAGNETISM &nbsp;⚛ RELATIVITY &nbsp;⚛ PARTICLE PHYSICS &nbsp;⚛ FLUID DYNAMICS &nbsp;⚛ NUCLEAR PHYSICS &nbsp;⚛ OPTICS &nbsp;⚛ STRING THEORY &nbsp;&nbsp;&nbsp;
+    ⚛ NEWTON'S LAWS &nbsp;⚛ QUANTUM MECHANICS &nbsp;⚛ THERMODYNAMICS &nbsp;⚛ ELECTROMAGNETISM &nbsp;⚛ RELATIVITY &nbsp;⚛ PARTICLE PHYSICS &nbsp;⚛ FLUID DYNAMICS &nbsp;⚛ NUCLEAR PHYSICS &nbsp;⚛ OPTICS &nbsp;⚛ STRING THEORY &nbsp;&nbsp;&nbsp;
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo">PHYSICS<em> DADA</em></div>
+  <div class="header-right">
+    <div class="header-sub">Brutalist AI Science Engine</div>
+    <div class="header-badges">
+      <span class="badge live">● LIVE</span>
+      <span class="badge">AI v2.5</span>
+      <span class="badge">GEMINI</span>
+    </div>
+  </div>
+</header>
+
+<!-- APP -->
+<div class="app">
+
+  <!-- LEFT: TOPICS -->
+  <aside class="sidebar">
+    <div class="sidebar-head">⚛ TOPICS</div>
+    <div class="topic-scroll">
+
+      <div class="topic-cat">// Classical Mechanics</div>
+      <button class="topic-btn" onclick="ask('Newton\'s Laws of Motion')">Newton's Laws</button>
+      <button class="topic-btn" onclick="ask('Kinematics and equations of motion')">Kinematics</button>
+      <button class="topic-btn" onclick="ask('Work, Energy and Power')">Work & Energy</button>
+      <button class="topic-btn" onclick="ask('Circular Motion and centripetal force')">Circular Motion</button>
+      <button class="topic-btn" onclick="ask('Gravitation and orbital mechanics')">Gravitation</button>
+
+      <div class="topic-cat">// Waves & Optics</div>
+      <button class="topic-btn" onclick="ask('Wave Motion and Sound')">Wave Motion</button>
+      <button class="topic-btn" onclick="ask('Optics, reflection and refraction of light')">Optics & Light</button>
+      <button class="topic-btn" onclick="ask('Interference and Diffraction')">Interference</button>
+
+      <div class="topic-cat">// Electromagnetism</div>
+      <button class="topic-btn" onclick="ask('Electrostatics and Coulombs Law')">Electrostatics</button>
+      <button class="topic-btn" onclick="ask('Magnetic Force and Fields')">Magnetism</button>
+      <button class="topic-btn" onclick="ask('Electromagnetic Induction and Faraday')">EM Induction</button>
+      <button class="topic-btn" onclick="ask('Maxwell\'s Equations')">Maxwell's Eqs</button>
+
+      <div class="topic-cat">// Modern Physics</div>
+      <button class="topic-btn" onclick="ask('Special Theory of Relativity')">Relativity</button>
+      <button class="topic-btn" onclick="ask('Quantum Mechanics and wave function')">Quantum Mech</button>
+      <button class="topic-btn" onclick="ask('Photoelectric Effect')">Photoelectric</button>
+      <button class="topic-btn" onclick="ask('Nuclear Physics and radioactive decay')">Nuclear Physics</button>
+      <button class="topic-btn" onclick="ask('Particle Physics and Standard Model')">Particle Physics</button>
+
+      <div class="topic-cat">// Thermal Physics</div>
+      <button class="topic-btn" onclick="ask('Laws of Thermodynamics')">Thermodynamics</button>
+      <button class="topic-btn" onclick="ask('Kinetic Theory of Gases')">Kinetic Theory</button>
+      <button class="topic-btn" onclick="ask('Heat Transfer mechanisms')">Heat Transfer</button>
+
+      <div class="topic-cat">// Frontier</div>
+      <button class="topic-btn" onclick="ask('Fluid Mechanics and Bernoulli equation')">Fluid Mechanics</button>
+      <button class="topic-btn" onclick="ask('String Theory')">String Theory</button>
+      <button class="topic-btn" onclick="ask('Dark Matter and Dark Energy')">Dark Matter</button>
+      <button class="topic-btn" onclick="ask('Black Holes and event horizons')">Black Holes</button>
+
+    </div>
+  </aside>
+
+  <!-- CENTER: CHAT -->
+  <main class="chat-main">
+    <div class="chat-header-bar">
+      <div class="status-dot"></div>
+      <div class="chat-bar-title">Chat Console</div>
+      <div class="chat-bar-right" id="msgCount">0 MESSAGES</div>
+    </div>
+
+    <div class="chat-feed" id="chatFeed">
+      <div class="welcome" id="welcomeScreen">
+        <div class="welcome-title">
+          KNOW<span>THE</span>FORCE
+        </div>
+        <div class="welcome-sub">
+          Ask any physics question.<br>
+          AI explanations + YouTube videos — instantly.
+        </div>
+        <div class="quick-chips">
+          <button class="chip" onclick="ask('Quantum Entanglement explained')">⚡ Quantum</button>
+          <button class="chip" onclick="ask('Black Holes and event horizons')">🕳 Black Holes</button>
+          <button class="chip" onclick="ask('Special Theory of Relativity')">🚀 Relativity</button>
+          <button class="chip" onclick="ask('Newton\'s Laws of Motion')">🍎 Newton</button>
+          <button class="chip" onclick="ask('Laws of Thermodynamics')">🔥 Thermo</button>
+          <button class="chip" onclick="ask('Wave Motion and Sound')">〰 Waves</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-wrap">
+        <textarea id="chatInput" rows="1" placeholder="e.g. Explain Schrödinger's equation... or What is entropy?"></textarea>
+      </div>
+      <button class="send-btn" onclick="sendMessage()">SEND →</button>
+    </div>
+  </main>
+
+  <!-- RIGHT: VIDEOS -->
+  <aside class="video-sidebar">
+    <div class="video-head">
+      <span>📺 VIDEO SUGGESTIONS</span>
+      <span class="video-count" id="videoCount">0 FOUND</span>
+    </div>
+    <div class="video-list" id="videoList">
+      <div class="video-empty">
+        <div class="video-empty-icon">📡</div>
+        <div class="video-empty-text">Ask a physics<br>question to load<br>related videos</div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="s-dot"></div>
+  <span class="s-active" id="statusText">READY</span>
+  <span class="s-sep">|</span>
+  <span>LLAMA 3.3 70B</span>
+  <span class="s-sep">|</span>
+  <span id="currentTopic">NO TOPIC SELECTED</span>
+</div>
+
+<!-- SETTINGS BUTTON -->
+<button class="settings-fab" onclick="openSettings()" title="Configure API Keys">⚙</button>
+
+<!-- SETTINGS MODAL -->
+<div class="settings-overlay" id="settingsModal">
+  <div class="settings-box">
+    <button class="settings-close" onclick="closeSettings()">✕</button>
+    <div class="settings-title">API CONFIGURATION</div>
+    <div class="settings-note">
+      🔒 Keys are stored <strong>in-memory only</strong> — never saved to disk or browser storage. You'll need to re-enter them each session.
+    </div>
+
+    <div class="settings-field">
+      <label>GROQ API KEY</label>
+      <div class="key-input-wrap">
+        <input type="password" id="inputGemini" placeholder="gsk_...">
+        <button class="toggle-vis" onclick="toggleVis('inputGemini', this)">SHOW</button>
+      </div>
+      <span class="field-hint">Get yours free at <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></span>
+    </div>
+
+    <div class="settings-field">
+      <label>YOUTUBE DATA API KEY</label>
+      <div class="key-input-wrap">
+        <input type="password" id="inputYT" placeholder="AIza...">
+        <button class="toggle-vis" onclick="toggleVis('inputYT', this)">SHOW</button>
+      </div>
+      <span class="field-hint">Get yours at <a href="https://console.cloud.google.com" target="_blank">Google Cloud Console</a> (optional — local DB used as fallback)</span>
+    </div>
+
+    <button class="settings-save" onclick="saveKeys()">SAVE & START →</button>
+    <div class="settings-status" id="keysStatus"></div>
+  </div>
+</div>
+
+<!-- No video modal needed — cards open YouTube directly -->
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  PHYSICS DADA — Core Logic
+// ═══════════════════════════════════════════════════════
+
+// API keys — set by user via settings modal (in-memory only, never stored)
+let GEMINI_KEY = '';
+let YT_KEY     = '';
+
+let msgCount = 0;
+const history = []; // Gemini multi-turn conversation history
+
+// ── Settings Modal ────────────────────────────────────
+function openSettings() {
+  document.getElementById('settingsModal').classList.add('open');
+}
+
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('open');
+}
+
+function toggleVis(inputId, btn) {
+  const el = document.getElementById(inputId);
+  if (el.type === 'password') {
+    el.type = 'text';
+    btn.textContent = 'HIDE';
+  } else {
+    el.type = 'password';
+    btn.textContent = 'SHOW';
+  }
+}
+
+function saveKeys() {
+  const g  = document.getElementById('inputGemini').value.trim();
+  const yt = document.getElementById('inputYT').value.trim();
+  const st = document.getElementById('keysStatus');
+
+  if (!g) {
+    st.textContent = '⚠ Groq API key is required!';
+    st.className = 'settings-status err';
+    return;
+  }
+
+  GEMINI_KEY = g;
+  YT_KEY     = yt; // optional
+
+  st.textContent = '✓ Keys saved — ready to chat!';
+  st.className = 'settings-status ok';
+  setTimeout(() => closeSettings(), 1200);
+}
+
+// Auto-open settings on first load if no keys set
+window.addEventListener('load', () => {
+  openSettings();
+});
+
+// ── Local Video Database (fallback when YouTube API fails) ──
+const LOCAL_VIDEOS = {
+  newton:     [{ id:'kKKM8Y-u7ds', t:"Newton's Three Laws of Motion", c:'Physics Online', d:'9:43' }, { id:'NYud15X8WXE', t:"Newton's Laws — Complete Guide", c:'Professor Dave', d:'11:20' }, { id:'kgBFa7xHvE0', t:'Forces & Newton\'s Laws', c:'Khan Academy', d:'8:30' }],
+  kinematics: [{ id:'ZM8ECpBuQYE', t:'Kinematics: Motion in 1D', c:'Khan Academy', d:'9:12' }, { id:'foO2oKpXVB8', t:'Kinematics Full Lecture', c:'Professor Dave', d:'18:43' }, { id:'VYgSXBjEA8I', t:'Projectile Motion Explained', c:'Physics Ninja', d:'12:30' }],
+  energy:     [{ id:'w4QFJb9a8vo', t:'Work, Energy & Power', c:'Professor Dave', d:'14:22' }, { id:'bJ5I-ZMaJ1g', t:'Conservation of Energy', c:'Khan Academy', d:'10:30' }, { id:'kFe4q_9zBiE', t:'Kinetic & Potential Energy', c:'CrashCourse', d:'11:06' }],
+  quantum:    [{ id:'p7bzE1E5PMY', t:'Quantum Physics Full Course', c:'PBS Space Time', d:'14:48' }, { id:'7u_UQG1La1o', t:"Schrödinger's Equation", c:'Professor Dave', d:'13:44' }, { id:'Ei8CFin00PY', t:'Wave-Particle Duality', c:'CrashCourse', d:'11:02' }],
+  relativity: [{ id:'msVuCqfZZzY', t:"Special Relativity — Einstein", c:'PBS Space Time', d:'16:30' }, { id:'ev9zrt__lec', t:'Time Dilation Explained', c:'Veritasium', d:'9:25' }, { id:'NnMIhxWRGNw', t:'E=mc² Explained', c:'MinutePhysics', d:'4:10' }],
+  blackholes: [{ id:'e-P5IFTqB98', t:'Black Holes — Birth to Death', c:'Kurzgesagt', d:'8:43' }, { id:'Wf0OfX0-arY', t:'Inside a Black Hole', c:'PBS Space Time', d:'14:40' }, { id:'Xd_p7MSuVdo', t:'Hawking Radiation', c:'Veritasium', d:'11:22' }],
+  thermo:     [{ id:'mGCnSHqZqLE', t:'Laws of Thermodynamics', c:'Professor Dave', d:'16:10' }, { id:'aEKv-OPh900', t:'Entropy Explained', c:'PBS Space Time', d:'13:45' }, { id:'HvMSRWTE2mI', t:'Thermodynamics CrashCourse', c:'CrashCourse', d:'11:20' }],
+  em:         [{ id:'kS25vitrZa4', t:'Electrostatics — Full Chapter', c:'Professor Dave', d:'18:22' }, { id:'J4Ecq9H2nAU', t:"Maxwell's Equations Visualized", c:'Eugene Khutoryansky', d:'14:55' }, { id:'pQp6bmJPU_0', t:"Coulomb's Law", c:'Khan Academy', d:'8:30' }],
+  magnetism:  [{ id:'cWrF_mR0wOs', t:'Magnetism — Full Lecture', c:'Professor Dave', d:'15:40' }, { id:'rB83DpBJQsE', t:'Magnetic Force on Charges', c:'Khan Academy', d:'10:22' }, { id:'zd5-oMzSnkQ', t:'Electromagnetic Induction', c:'Physics Online', d:'12:30' }],
+  waves:      [{ id:'c_pFCCHVLSk', t:'Wave Motion — Complete Guide', c:'Professor Dave', d:'14:30' }, { id:'kpywMWo9Xn8', t:'Sound Waves & Properties', c:'CrashCourse', d:'10:44' }, { id:'GsGE1sTWl2s', t:'Interference & Diffraction', c:'Physics Online', d:'11:18' }],
+  optics:     [{ id:'yhRkxekU2bQ', t:'Optics — Light & Refraction', c:'Professor Dave', d:'16:15' }, { id:'pTnEG_WGd2Q', t:'How Lenses Work', c:'Veritasium', d:'9:48' }, { id:'rAIboEkTzs4', t:"Snell's Law", c:'Khan Academy', d:'8:12' }],
+  nuclear:    [{ id:'BuFKUrPBRNI', t:'Nuclear Physics Explained', c:'Professor Dave', d:'17:30' }, { id:'rcOFV4y5z8c', t:'How Nuclear Reactors Work', c:'Kurzgesagt', d:'9:52' }, { id:'Oao35RnFVFc', t:'Radioactive Decay Types', c:'Khan Academy', d:'10:15' }],
+  gravity:    [{ id:'MTY1Kje0yLg', t:'Gravity — Newton vs Einstein', c:'PBS Space Time', d:'13:45' }, { id:'DdC0QN6f3G4', t:'Gravitational Fields', c:'Physics Online', d:'11:20' }, { id:'F5PfjsPdBzg', t:'Tidal Forces & Roche Limit', c:'Kurzgesagt', d:'8:30' }],
+  fluids:     [{ id:'I1qBOAlK-dI', t:"Bernoulli's Equation", c:'Professor Dave', d:'12:40' }, { id:'O_HQklhIlwQ', t:'Fluid Mechanics Full Course', c:'Michel van Biezen', d:'15:20' }, { id:'aXRTczANuIs', t:"Pascal's Law & Pressure", c:'Khan Academy', d:'9:10' }],
+  particles:  [{ id:'ehHoOYqAT_U', t:'Standard Model Explained', c:'PBS Space Time', d:'15:22' }, { id:'V0KjXsGRvoA', t:'The Higgs Boson', c:'Kurzgesagt', d:'7:42' }, { id:'eGk2bpYHdds', t:'Quarks, Gluons & QCD', c:'Fermilab', d:'13:30' }],
+  string:     [{ id:'n7cOlBxtKSo', t:'String Theory Explained', c:'Kurzgesagt', d:'8:02' }, { id:'kF4ju6j6aLE', t:'Is String Theory Science?', c:'PBS Space Time', d:'14:20' }],
+  dark:       [{ id:'QAa2O_8bUQ', t:'Dark Matter & Dark Energy', c:'Kurzgesagt', d:'9:20' }, { id:'HJ4svkABaKY', t:'What is Dark Matter?', c:'PBS Space Time', d:'13:15' }, { id:'rx7yh6PFiik', t:'Dark Energy Explained', c:'Veritasium', d:'11:30' }],
+  default:    [{ id:'ZihywtixUYo', t:'Physics — Full Course', c:'FreeCodeCamp', d:'3:14:00' }, { id:'b1t41Q3MZWQ', t:'The Map of Physics', c:'Domain of Science', d:'8:00' }, { id:'AwhKZ3fd9JA', t:'How Physics Works', c:'Kurzgesagt', d:'10:24' }],
+};
+
+function getLocalVideos(q) {
+  q = q.toLowerCase();
+  if (/newton|law of motion|f=ma|inertia/.test(q))                return LOCAL_VIDEOS.newton;
+  if (/kinematic|projectile|suvat|equation of motion/.test(q))    return LOCAL_VIDEOS.kinematics;
+  if (/energy|work|power|momentum|collision/.test(q))             return LOCAL_VIDEOS.energy;
+  if (/quantum|schr|wave function|uncertainty|heisenberg/.test(q))return LOCAL_VIDEOS.quantum;
+  if (/relativ|einstein|time dilation|lorentz|e=mc/.test(q))      return LOCAL_VIDEOS.relativity;
+  if (/black hole|singularity|hawking|event horizon/.test(q))     return LOCAL_VIDEOS.blackholes;
+  if (/thermo|entropy|carnot|heat engine/.test(q))                return LOCAL_VIDEOS.thermo;
+  if (/electro|coulomb|maxwell|capacitor|gauss/.test(q))          return LOCAL_VIDEOS.em;
+  if (/magnet|induction|faraday|lenz|motor/.test(q))              return LOCAL_VIDEOS.magnetism;
+  if (/wave|sound|doppler|resonance|harmonic/.test(q))            return LOCAL_VIDEOS.waves;
+  if (/optic|light|refraction|lens|mirror|snell/.test(q))         return LOCAL_VIDEOS.optics;
+  if (/nuclear|radioactive|fission|fusion|decay/.test(q))         return LOCAL_VIDEOS.nuclear;
+  if (/gravit|gravity|orbital|kepler|escape/.test(q))             return LOCAL_VIDEOS.gravity;
+  if (/fluid|bernoulli|pascal|hydraulic|buoy/.test(q))            return LOCAL_VIDEOS.fluids;
+  if (/particle|quark|higgs|standard model/.test(q))              return LOCAL_VIDEOS.particles;
+  if (/string theory|superstring|m-theory/.test(q))               return LOCAL_VIDEOS.string;
+  if (/dark matter|dark energy|cosmolog/.test(q))                 return LOCAL_VIDEOS.dark;
+  return LOCAL_VIDEOS.default;
+}
+
+// ── Utility ─────────────────────────────────────────
+function esc(s) {
+  return (s || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+function setStatus(text, topic) {
+  document.getElementById('statusText').textContent = text;
+  if (topic) {
+    const t = topic.length > 30 ? topic.slice(0, 30) + '...' : topic;
+    document.getElementById('currentTopic').textContent = t.toUpperCase();
+  }
+}
+
+function formatMsg(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/⚡\s*([^\n]+)/g, '<div class="formula">$1</div>')
+    .replace(/📌\s*([^\n]+)/g, '<div class="insight">$1</div>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\n/g, '<br>');
+}
+
+function addMsg(role, text) {
+  const feed = document.getElementById('chatFeed');
+  const el = document.createElement('div');
+  el.className = `msg ${role}`;
+  el.innerHTML = `
+    <div class="msg-label">${role === 'user' ? 'YOU' : 'PHYSICS DADA'}</div>
+    <div class="msg-bubble">${formatMsg(text)}</div>`;
+  feed.appendChild(el);
+  feed.scrollTop = feed.scrollHeight;
+  return el;
+}
+
+function addTyping() {
+  const feed = document.getElementById('chatFeed');
+  const el = document.createElement('div');
+  el.className = 'typing';
+  el.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+  feed.appendChild(el);
+  feed.scrollTop = feed.scrollHeight;
+  return el;
+}
+
+// ── Video Rendering ──────────────────────────────────
+async function loadVideos(query) {
+  const list  = document.getElementById('videoList');
+  const count = document.getElementById('videoCount');
+
+  list.innerHTML = `<div class="video-loading"><div class="loading-bar"></div><div class="loading-text">SEARCHING YOUTUBE...</div></div>`;
+
+  try {
+    const q   = encodeURIComponent(`${query} physics explained`);
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&maxResults=5&relevanceLanguage=en&key=${YT_KEY}`);
+    const data = await res.json();
+
+    if (data.error || !data.items?.length) throw new Error(data.error?.message || 'No results');
+
+    count.textContent = `${data.items.length} FOUND`;
+    list.innerHTML = data.items.map(item => {
+      const vid   = item.id.videoId;
+      const title = item.snippet.title;
+      const ch    = item.snippet.channelTitle;
+      const thumb = item.snippet.thumbnails?.medium?.url || `https://img.youtube.com/vi/${vid}/mqdefault.jpg`;
+      return `<div class="vcard" onclick="openVideo('${vid}')">
+        <div class="vcard-thumb">
+          <img src="${thumb}" alt="${esc(title)}" loading="lazy">
+          <div class="vcard-play-overlay"><div class="play-btn">▶</div></div>
+        </div>
+        <div class="vcard-info">
+          <div class="vcard-title">${title}</div>
+          <div class="vcard-meta">${ch}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+  } catch {
+    // Graceful fallback to local database
+    const vids = getLocalVideos(query);
+    count.textContent = `${vids.length} FOUND`;
+    list.innerHTML = vids.map(v => `
+      <div class="vcard" onclick="openVideo('${v.id}')">
+        <div class="vcard-thumb">
+          <img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" alt="${esc(v.t)}" loading="lazy">
+          <div class="vcard-play-overlay"><div class="play-btn">▶</div></div>
+          <div class="vcard-duration">${v.d}</div>
+        </div>
+        <div class="vcard-info">
+          <div class="vcard-title">${v.t}</div>
+          <div class="vcard-meta">${v.c}</div>
+        </div>
+      </div>`).join('');
+  }
+}
+
+// ── Video click → direct YouTube ─────────────────────
+function openVideo(id) {
+  window.open(`https://www.youtube.com/watch?v=${id}`, '_blank');
+}
+
+// ── Groq Chat ──────────────────────────────────────
+const SYS = `You are Physics Dada — a professional, precise AI physics tutor. Rules:
+- Answer ONLY physics questions. Politely redirect anything else.
+- Use **bold** for key terms. Put ⚡ before every formula on its own line. Put 📌 before key insights or fun facts.
+- Be concise: 3–5 paragraphs max. Always end with one mind-blowing fun fact.
+- All physics content must be 100% accurate. Use proper SI units.
+- Speak in clear, professional English only.`;
+
+async function sendMessage(text) {
+  const input = document.getElementById('chatInput');
+  const msg   = text || input.value.trim();
+  if (!msg) return;
+
+  // Guard — require Groq key
+  if (!GEMINI_KEY) {
+    openSettings();
+    return;
+  }
+
+  document.getElementById('welcomeScreen')?.remove();
+  input.value = '';
+  input.style.height = 'auto';
+
+  addMsg('user', msg);
+  msgCount++;
+  document.getElementById('msgCount').textContent = `${msgCount} MESSAGES`;
+  setStatus('THINKING...', msg);
+  document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+
+  const typing = addTyping();
+  loadVideos(msg); // fire in parallel — don't await
+
+  history.push({ role: 'user', content: msg });
+
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GEMINI_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: SYS },
+          ...history
+        ],
+        max_tokens: 1024,
+        temperature: 0.65
+      })
+    });
+
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+
+    const reply = data.choices?.[0]?.message?.content;
+    if (!reply) throw new Error('Empty response received from Groq');
+
+    history.push({ role: 'assistant', content: reply });
+    typing.remove();
+    addMsg('bot', reply);
+    setStatus('READY', msg);
+
+  } catch (err) {
+    typing.remove();
+    history.pop();
+    addMsg('bot', `⚠ **AI service error:** ${err.message}\n\nPlease verify your Groq API key is active.`);
+    setStatus('ERROR', msg);
+  }
+}
+
+function ask(topic) {
+  document.querySelectorAll('.topic-btn').forEach(b => {
+    if (b.textContent.trim().toLowerCase() === topic.slice(0, 14).toLowerCase() ||
+        b.getAttribute('onclick')?.includes(topic.slice(0, 10))) {
+      b.classList.add('active');
+    }
+  });
+  sendMessage(topic);
+}
+
+// ── Input handling ───────────────────────────────────
+const chatInput = document.getElementById('chatInput');
+
+chatInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
+chatInput.addEventListener('input', () => {
+  chatInput.style.height = 'auto';
+  chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+});
+</script>
+</body>
+</html>
